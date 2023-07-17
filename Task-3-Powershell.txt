@@ -1,0 +1,25 @@
+Powershell script to take nested object and key as input and return a value , Below is a sample script
+
+function GetValueFromNestedObject {
+    param (
+        [Parameter(Mandatory=$true)]
+        [System.Collections.Hashtable]$Object,
+
+        [Parameter(Mandatory=$true)]
+        [string]$Key
+    )
+
+    $keys = $Key -split '/'
+    $value = $Object
+
+    foreach ($k in $keys) {
+        if ($value -is [System.Collections.Hashtable] -and $value.ContainsKey($k)) {
+            $value = $value[$k]
+        }
+        else {
+            return $null
+        }
+    }
+
+    return $value
+}

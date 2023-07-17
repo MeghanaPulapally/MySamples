@@ -1,0 +1,36 @@
+Here in this example , I have used Count to create multiple resources
+
+
+# Define variables
+variable "prefix" {
+  description = "Prefix for resource names"
+  type        = string
+  default     = "sample"
+}
+
+variable "location" {
+  description = "Azure region for resources"
+  type        = string
+  default     = "eastus"
+}
+
+variable "tiers" {
+  description = "List of tiers in the architecture"
+  type        = list(string)
+  default     = ["web", "app", "db"]
+}
+
+# Create resource group
+resource "azurerm_resource_group" "sample_rg" {
+  name     = "${var.prefix}-rg"
+  location = var.location
+}
+
+# Create virtual networks, subnets, and virtual machines
+resource "azurerm_virtual_network" "sample_vnet" {
+  count                = length(var.tiers)
+  name                 = "${var.prefix}-${var.tiers[count.index]}-vnet"
+  address_space        = "10.${count.index}.0.0/16"
+  location             = azurerm_resource_group.sample_rg.location
+  resource_group_name  = azurerm_resource_group.sample_rg.name
+}
